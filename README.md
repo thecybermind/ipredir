@@ -3,7 +3,7 @@ ipredir
 
 IP redirection+NAT for Windows
 
-Rewrites outgoing packets to redirect which IP they are headed to as well as performing standard NAT functions for return packets.
+Rewrites outgoing packets to redirect which IP they are headed to as well as performing standard NAT functions for any redirected packets.
 
 Compilation
 ===========
