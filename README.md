@@ -8,7 +8,7 @@ Rewrites outgoing packets to redirect which IP they are headed to as well as per
 Compilation
 ===========
 
-ipredir requries the [MSVC binary package of WinDivert](http://reqrypt.org/windivert.html) to compile and function.
+ipredir requires the [MSVC binary package of WinDivert](http://reqrypt.org/windivert.html) to compile and function.
 
 The ipredir project looks for WinDivert headers and library files within the original directory structure of the zip file, once it has been extracted within the ipredir source directory (i.e. `ipredir\WinDivert-1.1.6-MSVC\include\windivert.h`)
 
