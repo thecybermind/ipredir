@@ -15,6 +15,11 @@
 //quick way to link with WinDivert.lib without changing project settings
 #pragma comment(lib, "WinDivert-1.1.6-MSVC/x86/WinDivert")
 
+const int VERSION_MAJOR = 1;
+const int VERSION_MINOR = 0;
+const int VERSION_PATCH = 0;
+const std::string VERSION_STR = "v" + std::to_string(VERSION_MAJOR) + "." + std::to_string(VERSION_MINOR) + "." + std::to_string(VERSION_PATCH);
+
 //lol global variables!!!
 ipmap_t ipmap;	//oldip->newip mapping
 int dbg = 0;	//debug flag
@@ -33,7 +38,7 @@ int main(int argc, char* argv[]) {
 
 	//parse args, get ip map and lists of ips. returns debug mode
 	dbg = parseArgs(args, ipmap, ipsout, ipsin);
-	
+
 	//write filter string using ip lists
 	std::string filter = makeFilter(ipsout, ipsin);
 
@@ -64,7 +69,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	//wait for keypress
-	std::cout << "Redirecting...press any key to stop" << std::endl;	
+	std::cout << "Redirecting...press any key to stop" << std::endl;
 	_getch();
 
 	//exit nicely
@@ -126,7 +131,7 @@ DWORD redirThread(LPVOID arg) {
 
 			//grab destination ip from header
 			from = piphdr->DstAddr;
-		
+
 			//look it up in redirect map
 			ipmap_t::iterator iter = ipmap.find(from);
 			//if not found, inject unmodified packet (shouldn't happen for outgoing packets since
@@ -136,7 +141,7 @@ DWORD redirThread(LPVOID arg) {
 				goto outputpacket;	//goto is best way to "break" nested ifs
 			}
 			to = iter->second;
-			
+
 			if (dbg) std::cout << DottedIPv4(to) << std::endl;
 
 			//replace with new destination ip
@@ -159,7 +164,7 @@ DWORD redirThread(LPVOID arg) {
 				ptcphdr ? ptcphdr->DstPort : (pudphdr ? pudphdr->DstPort : 0),
 				ptcphdr ? ptcphdr->SrcPort : (pudphdr ? pudphdr->SrcPort : 0),
 			};
-			
+
 			if (dbg) std::cout << "Rx:  " << DisplayTuple(tup) << "->";
 
 			//look up tuple in nat map
@@ -196,7 +201,7 @@ std::string makeFilter(std::vector<std::string> ipsout, std::vector<std::string>
 	std::vector<std::string>::iterator iter;
 
 	//"(outbound and (ip.SrcAddr==w.x.y.z or ip.SrcAddr==t.u.v.w or false)) or (inbound and (ip.SrcAddr==a.b.c.d or ip.SrcAddr==e.f.g.h or false))"
-	
+
 	std::string filter = "(outbound and (";
 
 	for (iter = ipsout.begin(); iter != ipsout.end(); ++iter) {
@@ -204,7 +209,7 @@ std::string makeFilter(std::vector<std::string> ipsout, std::vector<std::string>
 	}
 
 	filter += "false)) or (inbound and (";
-	
+
 	for (iter = ipsin.begin(); iter != ipsin.end(); ++iter) {
 		filter += ("ip.SrcAddr == " + *iter + " or ");
 	}
@@ -224,7 +229,7 @@ int parseArgs(std::vector<std::string> args, ipmap_t& ipmap, std::vector<std::st
 	std::vector<std::string>::iterator iter;
 	for (iter = args.begin(); iter != args.end(); ++iter) {
 		std::string arg = *iter;
-		
+
 		//handle simple debug flag
 		if (arg == "-d") {
 			dbg = 1;
@@ -257,7 +262,7 @@ int parseArgs(std::vector<std::string> args, ipmap_t& ipmap, std::vector<std::st
 			if (WinDivertHelperParseIPv4Address(strfrom.c_str(), &from)) {
 				from = byteswap(from);
 				ipmap[from] = to;
-				
+
 				//save string form of 'from' ip to add to WinDivert filter
 				ipsout.push_back(strfrom);
 				std::cout << "Adding redirect from " << strfrom << " to " << strto << std::endl;
@@ -335,7 +340,7 @@ std::string DisplayTuple(nattuple_t o) {
 
 //show usage/help
 void usage(const char* arg) {
-	std::cout << "ipredir by cybermind" << std::endl;
+	std::cout << "ipredir " << VERSION_STR << " by cybermind" << std::endl;
 	std::cout << "Will rewrite outgoing packets to redirect which IP they are headed to." << std::endl;
 	std::cout << "It will also rewrite the incoming packets back to their original values," << std::endl;
 	std::cout << "acting as a rudimentary NAT." << std::endl;
