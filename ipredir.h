@@ -8,7 +8,7 @@ typedef std::unordered_map<UINT32, UINT32> ipmap_t;
 struct nattuple_t {
 	UINT8 protocol; UINT32 localip; UINT32 remoteip; UINT16 localport; UINT16 remoteport;
 	//comparison functions for containers
-	bool operator<(const nattuple_t& o) const {	return memcmp(this, &o, sizeof(o))<0; }
+	bool operator<(const nattuple_t& o) const { return memcmp(this, &o, sizeof(o))<0; }
 	bool operator==(const nattuple_t& o) const { return memcmp(this, &o, sizeof(o))==0; }
 };
 //nat mapping
